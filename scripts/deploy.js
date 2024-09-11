@@ -1,21 +1,21 @@
-const hre = require("hardhat");
+// scripts/deploy.js
+
+const { ethers } = require("hardhat");
 
 async function main() {
-  /**
-   * @dev make sure the first argument has the same name as your contract in the Hello_swtr.sol file
-   * @dev the second argument must be the message we want to set in the contract during the deployment process
-   */
-  const contract = await hre.ethers.deployContract("Swisstronik", ["Hello Swisstronik!!"]);
+  const [deployer] = await ethers.getSigners();
+  console.log("Deploying contracts with the account:", deployer.address);
 
-  await contract.waitForDeployment();
+  const TokenContract = await ethers.getContractFactory("MyToken");
+  const initialOwner = deployer.address;
+  const myToken = await TokenContract.deploy(initialOwner);
 
-  console.log(`Swisstronik contract deployed to ${contract.target}`);
+  console.log("Token address:", myToken.target);
 }
 
-//DEFAULT BY HARDHAT:
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
